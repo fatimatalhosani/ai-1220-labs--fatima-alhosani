@@ -1,0 +1,6 @@
+task,owner,status
+Define requirements,team,done
+Sketch architecture,team,done
+Build API,backend,in-progress
+Build interface,frontend,not-started
+Review release,team,not-started

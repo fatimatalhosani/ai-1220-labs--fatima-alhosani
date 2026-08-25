@@ -1,0 +1,7 @@
+Project status
+2 of 5 tasks complete
+- Define requirements [done] (team)
+- Sketch architecture [done] (team)
+- Build API [in-progress] (backend)
+- Build interface [not-started] (frontend)
+- Review release [not-started] (team)
