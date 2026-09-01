@@ -4,9 +4,9 @@
 Create a usable first version of LabLoans that allows lab staff to record equipment loans and see which items are currently borrowed.
 
 ## Selected items
-[F] Lab staff need to record when equipment is borrowed and who borrowed it.
-[F] Lab staff need to see which equipment is currently on loan and when it is due.
-[F] Borrowers need to receive a reminder before borrowed equipment becomes overdue.
+- [F] Lab staff need to record when equipment is borrowed and who borrowed it.
+- [F] Lab staff need to see which equipment is currently on loan and when it is due.
+- [F] Lab staff need to receive a weekly report showing every equipment loan that is still open.
 
 ## Definition of Done
 A lab staff member can record an equipment loan with the borrower and due date.
