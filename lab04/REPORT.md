@@ -112,7 +112,7 @@ Observed result and why it agrees with the contract: Trimmed valid values were s
 
 ## Submission
 
-- Final commit hash (`Complete lab04 playlist`): This is the final commit at repository `HEAD`; its exact hash is recorded by the submission command and Git history.
+- Final GitHub commit hash (`lab04 playlist`): `a49853bc972b6280e9dc080579f72949aa26de25`.
 - Files included and review notes: `lab04/backend.py`, `lab04/index.html`, `lab04/REPORT.md`, `lab04/README.md`, and `lab04/.gitignore`; unrelated existing labs were preserved.
 - Push and GitHub verification: Pending GitHub connector authorization in this session.
 - Optional stretch, if attempted: Not attempted.
