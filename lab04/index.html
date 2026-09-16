@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 04 - Playlist</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 2rem 1rem;
+      background: #f3f5f8;
+      color: #182333;
+      font-family: system-ui, sans-serif;
+      line-height: 1.5;
+    }
+    main {
+      max-width: 42rem;
+      margin: 0 auto;
+      padding: 1.5rem;
+      background: white;
+      border: 1px solid #d8dee8;
+      border-radius: 0.75rem;
+    }
+    h1 { margin-top: 0; }
+    h2 { margin-top: 1.75rem; font-size: 1.25rem; }
+    label { display: block; margin-top: 1rem; font-weight: 600; }
+    input {
+      display: block;
+      width: 100%;
+      margin-top: 0.35rem;
+      padding: 0.65rem;
+      border: 1px solid #64748b;
+      border-radius: 0.3rem;
+      font: inherit;
+    }
+    button {
+      margin-top: 1rem;
+      padding: 0.65rem 1rem;
+      border: 0;
+      border-radius: 0.3rem;
+      background: #1748a0;
+      color: white;
+      font: inherit;
+      cursor: pointer;
+    }
+    button:disabled { opacity: 0.65; cursor: wait; }
+    :focus-visible { outline: 3px solid #b45309; outline-offset: 3px; }
+    li { padding: 0.35rem 0; }
+    #error-message { color: #a31515; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <main>
+    <!-- TODO (Exercise 3): change the visible heading to My playlist. -->
+    <h1>My playlist</h1>
+    <p>Add an invented song's title and artist.</p>
+
+    <h2>Add a song</h2>
+    <!-- Validation belongs to the backend so rejected input can be tested. -->
+    <form id="song-form" novalidate>
+      <label for="title">Title</label>
+      <input id="title" name="title" type="text" autocomplete="off">
+
+      <label for="artist">Artist</label>
+      <input id="artist" name="artist" type="text" autocomplete="off">
+
+      <button id="add-button" type="submit">Add song</button>
+    </form>
+
+    <p id="error-message" role="alert" hidden></p>
+    <p id="status-message" role="status"></p>
+
+    <h2>Stored songs</h2>
+    <ul id="song-list" aria-live="polite" aria-label="Stored songs"></ul>
+  </main>
+
+  <script>
+    const form = document.querySelector("#song-form");
+    const titleInput = document.querySelector("#title");
+    const artistInput = document.querySelector("#artist");
+    const addButton = document.querySelector("#add-button");
+    const songList = document.querySelector("#song-list");
+    const errorMessage = document.querySelector("#error-message");
+    const statusMessage = document.querySelector("#status-message");
+
+    // Supplied helper: return parsed JSON or throw the server's error message.
+    // The optional options object is passed directly to fetch.
+    async function requestJSON(path, options = {}) {
+      const response = await fetch(path, options);
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || `Request failed (${response.status}).`);
+      }
+      return data;
+    }
+
+    async function sendSong(title, artist) {
+      // TODO (Exercise 3): complete only this marked function.
+      // Use requestJSON to send the supplied title and artist to POST /songs.
+      // Send a JSON object with those two fields and the Content-Type
+      // application/json header. Return the helper's parsed response.
+      // Leave trimming and validation to the Python backend.
+      return requestJSON("/songs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, artist })
+      });
+    }
+
+    // Supplied display and form behavior: no exercise changes are needed here.
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.hidden = !message;
+    }
+
+    async function loadSongs() {
+      const storedSongs = await requestJSON("/songs");
+      songList.replaceChildren();
+      for (const song of storedSongs) {
+        const item = document.createElement("li");
+        item.textContent = `${song.title} / ${song.artist}`;
+        songList.appendChild(item);
+      }
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (addButton.disabled) return;
+      showError("");
+      statusMessage.textContent = "";
+      addButton.disabled = true;
+
+      try {
+        await sendSong(titleInput.value, artistInput.value);
+      } catch (error) {
+        // A rejected addition retains both inputs and the displayed list.
+        showError(error.message);
+        addButton.disabled = false;
+        return;
+      }
+
+      // A successful POST clears the inputs, then reads the server's list.
+      form.reset();
+      try {
+        await loadSongs();
+        statusMessage.textContent = "Song added.";
+      } catch (error) {
+        showError(`Song added, but the list could not reload: ${error.message}`);
+      } finally {
+        addButton.disabled = false;
+        titleInput.focus();
+      }
+    });
+
+    loadSongs().catch((error) => showError(error.message));
+  </script>
+</body>
+</html>
