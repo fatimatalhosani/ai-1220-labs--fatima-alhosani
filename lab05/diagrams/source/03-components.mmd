@@ -1,0 +1,61 @@
+flowchart LR
+  title["03 — Component View: Workshop Board API"]
+  actor["Signed-in student / organiser"]
+  identity["Campus Identity<br/>External verifier"]
+  mail["University Mail<br/>External sender"]
+  db[("Workshop Database<br/>PostgreSQL")]
+
+  subgraph api[Workshop Board API — expands the application-service container]
+    auth["AuthContext<br/>Verifies external profile and exposes
+StudentId, name, email to use cases"]
+    workshop["WorkshopCatalog<br/>Creates, lists and publishes workshops;
+checks owner, title, time and capacity 1–20"]
+    reservation["ReservationService<br/>Reserves at most one seat;
+returns existing reservation on repeat;
+rejects full or unverified requests"]
+    attendee["AttendeeQuery<br/>Returns attendee names/emails only
+to the workshop owner"]
+    mailer["ConfirmationNotifier<br/>Requests one email after commit;
+converts mail outage to warning"]
+    repo["WorkshopRepository
+ReservationRepository<br/>Typed persistence ports"]
+  end
+
+  actor -->|HTTPS/JSON: commands and queries| auth
+  auth -->|Verified profile: StudentId, name, email| workshop
+  auth -->|Verified profile + session| reservation
+  auth -->|Verified profile + session| attendee
+  workshop -->|Workshop command/query| repo
+  reservation -->|Atomic transaction: existing check,
+capacity check, insert| repo
+  attendee -->|Owner-scoped attendee query| repo
+  repo -->|SQL: workshops and reservations| db
+  reservation -->|Committed reservation summary| mailer
+  mailer -->|SMTP/HTTPS: one confirmation request| mail
+  attendee -->|Owner-only attendee data| actor
+
+  subgraph legend[Legend]
+    comp["Blue: component"]
+    port["Purple: persistence port"]
+    ext["Grey: external element"]
+    person["Yellow: caller"]
+  end
+  classDef comp fill:#b9dcff,stroke:#24527a,color:#102a43,stroke-width:2px;
+  classDef port fill:#e4d5ff,stroke:#65418f,color:#24133d,stroke-width:2px;
+  classDef ext fill:#e7e7e7,stroke:#555,color:#222;
+  classDef person fill:#fff0b3,stroke:#8a6d1d,color:#222;
+  classDef legend fill:#fff,stroke:#999,color:#333;
+  class auth,workshop,reservation,attendee,mailer comp;
+  class repo port;
+  class identity,mail,db ext;
+  class actor person;
+  class title,legend,comp,port,ext,person legend;
+  style api fill:#f7fbff,stroke:#24527a,stroke-width:2px;
+  style legend fill:#fff,stroke:#999;
+  style comp fill:#b9dcff,stroke:#24527a;
+  style port fill:#e4d5ff,stroke:#65418f;
+  style ext fill:#e7e7e7,stroke:#555;
+  style person fill:#fff0b3,stroke:#8a6d1d;
+
+  %% Interface data: ReservationRequest {workshopId, studentId};
+  %% ReservationResult {reservationId, status, remainingSeats, warning?}.

@@ -1,0 +1,28 @@
+sequenceDiagram
+  title 05 — Dynamic View: Ari's Reservation Attempt
+  autonumber
+  actor Ari as Ari (S23, ari@example.invalid)
+  participant Web as Web Application
+  participant Auth as AuthContext
+  participant Reserve as ReservationService
+  participant DB as Workshop Database
+  participant Mail as University Mail
+
+  Ari->>Web: Select published W17, click Reserve
+  Web->>Auth: Validate signed-in session
+  Auth-->>Web: verified StudentId S23, name, email
+  Web->>Reserve: reserve request for W17 and S23
+  Reserve->>DB: Begin transaction and find reservation W17/S23
+  DB-->>Reserve: none
+  Reserve->>DB: Lock W17 and read capacity 3, reserved 2
+  DB-->>Reserve: seat available
+  Reserve->>DB: Insert reservation W17/S23 and commit
+  DB-->>Reserve: success, remaining seats 0
+  Reserve->>Mail: Request confirmation to ari@example.invalid
+  Mail-->>Reserve: unavailable
+  Reserve-->>Web: succeeded, remaining seats 0, email unavailable
+  Web-->>Ari: Reservation succeeded, confirmation email unavailable
+
+  Note over DB: Stored before W17 reservations are S21 and S22 and Ari is absent
+  Note over DB: Stored after W17 reservations are S21 S22 and S23 and capacity remains 3
+  Note over Reserve,Mail: No automatic retry and the committed seat is retained per R6

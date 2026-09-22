@@ -1,0 +1,47 @@
+flowchart LR
+  title["02 — Container View: Campus Workshop Board"]
+  student["University Student / Organiser"]
+  identity["Campus Identity<br/>External system"]
+  mail["University Mail<br/>External system"]
+
+  subgraph board[Campus Workshop Board — team-owned software system]
+    web["Web Application<br/>Type: server-rendered web app<br/>Technology: TypeScript + HTTP/HTML<br/>Responsibilities: session UI, workshop browsing,<nowner actions, reservation responses"]
+    api["Workshop Board API<br/>Type: application service<br/>Technology: TypeScript REST/JSON over HTTPS<br/>Responsibilities: authentication boundary, authorization,
+workshop and reservation use cases"]
+    db[("Workshop Database<br/>Type: relational data store<br/>Technology: PostgreSQL<br/>Stores: students, workshops, reservations;
+unique reservation and capacity constraints")]
+    outbox["Mail Notification Adapter<br/>Type: application component<br/>Technology: HTTPS/SMTP client<br/>Responsibilities: request one confirmation,
+translate mail outage into a user-visible warning"]
+  end
+
+  student -->|HTTPS: pages and form actions| web
+  web -->|Internal call: commands and queries| api
+  api -->|SQL transaction: load/store workshops,
+owners and reservations| db
+  api -->|Command: confirmation recipient
+and reservation summary| outbox
+  api -->|OIDC/HTTPS: credential -> verified profile| identity
+  outbox -->|SMTP/HTTPS: send confirmation| mail
+
+  subgraph legend[Legend]
+    app["Blue: application container"]
+    store["Purple: persistent data store"]
+    external["Grey: external system"]
+    person["Yellow: person"]
+  end
+  classDef app fill:#b9dcff,stroke:#24527a,color:#102a43,stroke-width:2px;
+  classDef store fill:#e4d5ff,stroke:#65418f,color:#24133d,stroke-width:2px;
+  classDef ext fill:#e7e7e7,stroke:#555,color:#222;
+  classDef person fill:#fff0b3,stroke:#8a6d1d,color:#222;
+  classDef legend fill:#fff,stroke:#999,color:#333;
+  class web,api,outbox app;
+  class db store;
+  class identity,mail ext;
+  class student person;
+  class title,legend,app,store,external,person legend;
+  style board fill:#f7fbff,stroke:#24527a,stroke-width:2px;
+  style legend fill:#fff,stroke:#999;
+  style app fill:#b9dcff,stroke:#24527a;
+  style store fill:#e4d5ff,stroke:#65418f;
+  style external fill:#e7e7e7,stroke:#555;
+  style person fill:#fff0b3,stroke:#8a6d1d;

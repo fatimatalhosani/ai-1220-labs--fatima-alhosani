@@ -1,0 +1,37 @@
+flowchart LR
+  title["01 — System Context: Campus Workshop Board"]
+  student["University Student<br/>Browses, creates, publishes and reserves workshops"]
+  organiser["Workshop Organiser<br/>Owner of a created workshop; views attendee contact details"]
+  board("Campus Workshop Board<br/>Software system<br/>Publishes workshops, enforces ownership/capacity rules,<br/>persists reservations and requests confirmation mail")
+  identity["External Campus Identity<br/>University-managed system<br/>Verifies credentials; returns student ID, name and email"]
+  mail["External University Mail<br/>University-managed system<br/>Sends reservation confirmation messages"]
+
+  student -->|HTTPS: sign in, browse workshops,<ncreate workshop, reserve seat| board
+  organiser -->|HTTPS: publish owned workshop,
+view attendee names and emails| board
+  board -->|OIDC/HTTPS: credential verification;
+student ID, name, email| identity
+  board -->|SMTP/HTTPS: confirmation request;
+recipient, workshop and reservation details| mail
+
+  subgraph legend[Legend]
+    inScope["Blue: team-owned system"]
+    external["Grey: external system"]
+    person["Yellow: person / role"]
+  end
+  classDef system fill:#b9dcff,stroke:#24527a,color:#102a43,stroke-width:2px;
+  classDef ext fill:#e7e7e7,stroke:#555,color:#222;
+  classDef person fill:#fff0b3,stroke:#8a6d1d,color:#222;
+  classDef legend fill:#ffffff,stroke:#999,color:#333;
+  class board system;
+  class identity,mail ext;
+  class student,organiser person;
+  class title,legend,inScope,external,person legend;
+  style title fill:#ffffff,stroke:#ffffff,color:#102a43,font-weight:bold;
+  style legend fill:#ffffff,stroke:#999;
+  style inScope fill:#b9dcff,stroke:#24527a;
+  style external fill:#e7e7e7,stroke:#555;
+  style person fill:#fff0b3,stroke:#8a6d1d;
+
+  %% Legend markers are explanatory only; all domain relationships are above.
+  %% R1-R6 are implemented by the board and its two external integrations.

@@ -1,0 +1,51 @@
+flowchart LR
+  title["04 — Code View: Reservation Operation"]
+  caller["ReservationController<br/>POST /workshops/{id}/reservations"]
+  service["ReservationService.reserve(request)<br/>Input: ReservationRequest {workshopId: WorkshopId,<br/>studentId: StudentId}"]
+  tx["UnitOfWork / DB transaction<br/>serializable or row lock on workshop"]
+  existing["ReservationRepository.findByWorkshopAndStudent<br/>Result: Reservation | none"]
+  workshop["WorkshopRepository.getForUpdate<br/>Result: published Workshop {capacity, reservedCount}"]
+  insert["ReservationRepository.insert<br/>Unique key: (workshopId, studentId)"]
+  commit["Commit transaction<br/>Invariant: reservedCount ≤ capacity"]
+  notify["ConfirmationNotifier.notify<br/>Result: sent | unavailable"]
+  result["ReservationResult<br/>created | already_reserved | full | rejected<br/>plus remainingSeats and optional warning"]
+
+  caller -->|typed request + authenticated StudentId| service
+  service -->|begin transaction| tx
+  tx --> existing
+  existing -->|existing reservation| result
+  existing -->|none| workshop
+  workshop -->|published + seat available| insert
+  workshop -->|full / unpublished| result
+  insert -->|success; unique constraint protects repeat race| commit
+  commit -->|after commit only| notify
+  notify -->|mail unavailable: preserve seat,
+set warning| result
+  notify -->|sent| result
+
+  subgraph rules[Invariants and outcomes]
+    r1["R4: at most one reservation per student/workshop"]
+    r2["R4: never exceed capacity under overlap"]
+    r3["R6: mail failure does not roll back a committed seat"]
+  end
+  service -.-> r1
+  tx -.-> r2
+  notify -.-> r3
+
+  subgraph legend[Legend]
+    code["Blue: code unit"]
+    data["Purple: typed data / persistence boundary"]
+    rule["Green: invariant or outcome rule"]
+  end
+  classDef code fill:#b9dcff,stroke:#24527a,color:#102a43,stroke-width:2px;
+  classDef data fill:#e4d5ff,stroke:#65418f,color:#24133d,stroke-width:2px;
+  classDef rule fill:#d9f2d9,stroke:#3d7a3d,color:#163b16;
+  classDef legend fill:#fff,stroke:#999,color:#333;
+  class caller,service,tx,existing,workshop,insert,commit,notify,result code;
+  class r1,r2,r3 rule;
+  class title,legend,code,data,rule legend;
+  style rules fill:#f6fff6,stroke:#3d7a3d,stroke-width:2px;
+  style legend fill:#fff,stroke:#999;
+  style code fill:#b9dcff,stroke:#24527a;
+  style data fill:#e4d5ff,stroke:#65418f;
+  style rule fill:#d9f2d9,stroke:#3d7a3d;
