@@ -6,7 +6,7 @@ flowchart LR
   identity["External Campus Identity<br/>University-managed system<br/>Verifies credentials; returns student ID, name and email"]
   mail["External University Mail<br/>University-managed system<br/>Sends reservation confirmation messages"]
 
-  student -->|HTTPS: sign in, browse workshops,<ncreate workshop, reserve seat| board
+  student -->|HTTPS: sign in, browse workshops,<br/>create workshop, reserve seat| board
   organiser -->|HTTPS: publish owned workshop,
 view attendee names and emails| board
   board -->|OIDC/HTTPS: credential verification;

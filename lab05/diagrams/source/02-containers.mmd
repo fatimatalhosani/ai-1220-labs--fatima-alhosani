@@ -5,7 +5,7 @@ flowchart LR
   mail["University Mail<br/>External system"]
 
   subgraph board[Campus Workshop Board — team-owned software system]
-    web["Web Application<br/>Type: server-rendered web app<br/>Technology: TypeScript + HTTP/HTML<br/>Responsibilities: session UI, workshop browsing,<nowner actions, reservation responses"]
+    web["Web Application<br/>Type: server-rendered web app<br/>Technology: TypeScript + HTTP/HTML<br/>Responsibilities: session UI, workshop browsing,<br/>owner actions, reservation responses"]
     api["Workshop Board API<br/>Type: application service<br/>Technology: TypeScript REST/JSON over HTTPS<br/>Responsibilities: authentication boundary, authorization,
 workshop and reservation use cases"]
     db[("Workshop Database<br/>Type: relational data store<br/>Technology: PostgreSQL<br/>Stores: students, workshops, reservations;
