@@ -1,0 +1,24 @@
+default_permissions = "tester"
+web_search = "disabled"
+
+[permissions.tester]
+description = "The tester: reads the requirements, writes only tests/, no network"
+
+[permissions.tester.filesystem]
+":minimal" = "read"
+
+[permissions.tester.filesystem.":workspace_roots"]
+"AGENTS.md" = "read"
+"REQUIREMENTS.md" = "read"
+"tests" = "write"
+
+[permissions.reviewer]
+description = "The reviewer: reads the code and the requirements, changes nothing"
+
+[permissions.reviewer.filesystem]
+":minimal" = "read"
+
+[permissions.reviewer.filesystem.":workspace_roots"]
+"AGENTS.md" = "read"
+"REQUIREMENTS.md" = "read"
+"fees.py" = "read"
