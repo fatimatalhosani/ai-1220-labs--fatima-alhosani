@@ -1,0 +1,9 @@
+Codex version: codex command not available in this sandbox; unable to observe a version
+Tester reads AGENTS.md and REQUIREMENTS.md: FAIL (Codex CLI unavailable; permission check not run)
+Tester writes tests/check.txt: FAIL (Codex CLI unavailable; permission check not run)
+Tester cannot read fees.py or README.md: FAIL (Codex CLI unavailable; permission check not run)
+Tester cannot change fees.py: FAIL (Codex CLI unavailable; permission check not run)
+Tester cannot reach example.com: FAIL (Codex CLI unavailable; permission check not run)
+Reviewer reads AGENTS.md and fees.py: FAIL (Codex CLI unavailable; permission check not run)
+Reviewer cannot read tests/check.txt: FAIL (Codex CLI unavailable; permission check not run)
+Reviewer cannot change fees.py: FAIL (Codex CLI unavailable; permission check not run)
