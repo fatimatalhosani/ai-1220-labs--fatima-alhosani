@@ -7,3 +7,4 @@ Tester cannot reach example.com: FAIL (Codex CLI unavailable; permission check n
 Reviewer reads AGENTS.md and fees.py: FAIL (Codex CLI unavailable; permission check not run)
 Reviewer cannot read tests/check.txt: FAIL (Codex CLI unavailable; permission check not run)
 Reviewer cannot change fees.py: FAIL (Codex CLI unavailable; permission check not run)
+
