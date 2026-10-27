@@ -1,0 +1,14 @@
+[project]
+name = "ai1220-lab08-playlist"
+version = "1.0.0"
+description = "AI1220 Lab 8 (team version): a playlist API and page built from one contract (synthetic data, local only)"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+  "fastapi==0.143.0",
+  "uvicorn==0.54.0",
+  "httpx==0.28.1",
+]
+
+[tool.uv]
+package = false
+exclude-newer = "2026-10-10T00:00:00Z"

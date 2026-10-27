@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>Collaborative Playlist</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f7f6f2; color: #243127; font: 1.05rem/1.55 system-ui, sans-serif; }
+    main { max-width: 38rem; margin: 2.5rem auto; padding: 0 1.25rem; }
+    h1 { font-size: 2.2rem; line-height: 1.15; margin-bottom: 1rem; }
+    .add { display: grid; grid-template-columns: 1fr 1fr auto; gap: .6rem; }
+    input, button { font: inherit; min-height: 2.75rem; border-radius: .25rem; }
+    input { width: 100%; padding: .45rem; color: #243127; background: white; border: 1px solid #596258; }
+    button { padding: .45rem 1.1rem; color: white; background: #2d5a43; border: 0; cursor: pointer; }
+    :focus-visible { outline: 3px solid #a24f24; outline-offset: 3px; }
+    #message { min-height: 1.6rem; color: #8a2d0f; font-weight: 650; }
+    .card { display: flex; align-items: center; gap: 1rem; margin: .6rem 0; padding: .7rem 1rem; background: white; border: 1px solid #cfd5ca; border-radius: .4rem; }
+    .card h3 { margin: 0; font-size: 1.1rem; }
+    .card p { margin: 0; color: #4f594f; }
+    .card .info { flex: 1; }
+    .votes { font-weight: 700; min-width: 2.5rem; text-align: right; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Collaborative Playlist</h1>
+    <div class="add">
+      <input id="title" placeholder="Song title" autocomplete="off">
+      <input id="artist" placeholder="Artist" autocomplete="off">
+      <button id="add-btn" type="button">Add Song</button>
+    </div>
+    <p id="message" role="status" aria-live="polite"></p>
+    <div id="playlist"></div>
+  </main>
+  <script>
+    function esc(text) {
+      const div = document.createElement("div");
+      div.textContent = String(text);
+      return div.innerHTML;
+    }
+
+    function songCard(id, title, artist, votes) {
+      return `
+        <div class="card" data-id="${esc(id)}">
+          <div class="info"><h3>${esc(title)}</h3><p>${esc(artist)}</p></div>
+          <span class="votes">${esc(votes)}</span>
+          <button class="vote-btn" type="button">Vote</button>
+        </div>`;
+    }
+
+    function showMessage(text) {
+      document.querySelector("#message").textContent = text;
+    }
+
+    async function loadPlaylist() {
+      const response = await fetch("/songs");
+      const data = await response.json();
+      if (!response.ok) {
+        showMessage(data.error || "Could not load playlist");
+        return;
+      }
+      document.querySelector("#playlist").innerHTML = data
+        .map((song) => songCard(song.id, song.title, song.artist, song.votes))
+        .join("");
+    }
+
+    async function addSong() {
+      const titleInput = document.querySelector("#title");
+      const artistInput = document.querySelector("#artist");
+      const response = await fetch("/songs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: titleInput.value, artist: artistInput.value }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        showMessage(data.error);
+        return;
+      }
+      titleInput.value = "";
+      artistInput.value = "";
+      showMessage("");
+      await loadPlaylist();
+    }
+
+    async function vote(id) {
+      const response = await fetch(`/songs/${encodeURIComponent(id)}/likes`, {
+        method: "POST",
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        showMessage(data.error);
+        return;
+      }
+      showMessage("");
+      await loadPlaylist();
+    }
+
+    document.querySelector("#add-btn").addEventListener("click", addSong);
+    document.querySelector("#playlist").addEventListener("click", (event) => {
+      const button = event.target.closest(".vote-btn");
+      if (button) vote(button.closest(".card").dataset.id);
+    });
+    loadPlaylist();
+  </script>
+</body>
+</html>
