@@ -1,0 +1,17 @@
+:root {
+  font-family: system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
+  color: #20241f;
+  background: #e8ede3;
+}
+body { margin: 0; }
+.cart { max-width: 36rem; margin: 3rem auto; padding: 0 1rem; display: grid; gap: 1rem; }
+h1 { font-size: 1.7rem; margin: 0; }
+header p { margin: .2rem 0 0; color: #4f594f; }
+.menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: .75rem; }
+.drink { padding: .8rem 1rem; border: 1px solid #aab3a4; background: #f2f4ef; }
+.drink h2 { font-size: 1.15rem; margin: 0; }
+.drink p { margin: .3rem 0 0; font-weight: 600; }
+.order { font-size: 1.25rem; font-weight: 600; margin: 0; }
+.offer { margin: 0; padding: .5rem .8rem; background: #8a2d0f; color: #fff; justify-self: start; }
+button { font: inherit; min-height: 44px; padding: .5rem 1rem; margin-right: .75rem; border: 1px solid #20241f; background: #dfe6da; color: #20241f; cursor: pointer; }
+button:focus-visible { outline: 2px solid #8a2d0f; outline-offset: 3px; }
