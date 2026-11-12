@@ -1,0 +1,19 @@
+[project]
+name = "lab10-study-room-desk"
+version = "1.0.0"
+description = "AI1220 Lab 10: a terminal chatbot with Pydantic AI"
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic-ai-slim[openai]==2.66.0",
+]
+
+[dependency-groups]
+dev = ["pytest==9.0.2"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+pythonpath = ["."]
+
+[tool.uv]
+package = false
